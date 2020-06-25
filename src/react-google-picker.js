@@ -1,40 +1,39 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import loadScript from 'load-script';
+import React from "react";
+import PropTypes from "prop-types";
+import loadScript from "load-script";
 
-const GOOGLE_SDK_URL = 'https://apis.google.com/js/api.js';
+const GOOGLE_SDK_URL = "https://apis.google.com/js/api.js";
 
 let scriptLoadingStarted = false;
 
 export default class GoogleChooser extends React.Component {
-
-    static propTypes = {
-        children: PropTypes.node,
-        clientId: PropTypes.string.isRequired,
-        developerKey: PropTypes.string,
-        scope: PropTypes.array,
-        viewId: PropTypes.string,
-        authImmediate: PropTypes.bool,
-        origin: PropTypes.string,
-        onChange: PropTypes.func,
-        onAuthenticate: PropTypes.func,
-        onAuthFailed: PropTypes.func,
-        createPicker: PropTypes.func,
-        multiselect: PropTypes.bool,
-        navHidden: PropTypes.bool,
-        disabled: PropTypes.bool
+  static propTypes = {
+    children: PropTypes.node,
+    clientId: PropTypes.string.isRequired,
+    developerKey: PropTypes.string,
+    scope: PropTypes.array,
+    viewId: PropTypes.string,
+    authImmediate: PropTypes.bool,
+    origin: PropTypes.string,
+    onChange: PropTypes.func,
+    onAuthenticate: PropTypes.func,
+    onAuthFailed: PropTypes.func,
+    createPicker: PropTypes.func,
+    multiselect: PropTypes.bool,
+    navHidden: PropTypes.bool,
+    disabled: PropTypes.bool,
   };
 
   static defaultProps = {
     onChange: () => {},
     onAuthenticate: () => {},
     onAuthFailed: () => {},
-    scope:['https://www.googleapis.com/auth/drive.readonly'],
-    viewId: 'DOCS',
+    scope: ["https://www.googleapis.com/auth/drive.readonly"],
+    viewId: "DOCS",
     authImmediate: false,
     multiselect: false,
     navHidden: false,
-    disabled: false
+    disabled: false,
   };
 
   constructor(props) {
@@ -45,14 +44,14 @@ export default class GoogleChooser extends React.Component {
   }
 
   componentDidMount() {
-    if(this.isGoogleReady()) {
+    if (this.isGoogleReady()) {
       // google api is already exists
       // init immediately
       this.onApiLoad();
     } else if (!scriptLoadingStarted) {
       // load google api and the init
       scriptLoadingStarted = true;
-      loadScript(GOOGLE_SDK_URL, this.onApiLoad)
+      loadScript(GOOGLE_SDK_URL, this.onApiLoad);
     } else {
       // is loading
     }
@@ -71,22 +70,28 @@ export default class GoogleChooser extends React.Component {
   }
 
   onApiLoad() {
-    window.gapi.load('auth');
-    window.gapi.load('picker');
+    window.gapi.load("auth");
+    window.gapi.load("picker");
   }
 
   doAuth(callback) {
-    window.gapi.auth.authorize({
+    window.gapi.auth.authorize(
+      {
         client_id: this.props.clientId,
         scope: this.props.scope,
-        immediate: this.props.authImmediate
+        immediate: this.props.authImmediate,
       },
       callback
     );
   }
 
   onChoose() {
-    if (!this.isGoogleReady() || !this.isGoogleAuthReady() || !this.isGooglePickerReady() || this.props.disabled) {
+    if (
+      !this.isGoogleReady() ||
+      !this.isGoogleAuthReady() ||
+      !this.isGooglePickerReady() ||
+      this.props.disabled
+    ) {
       return null;
     }
 
@@ -96,9 +101,9 @@ export default class GoogleChooser extends React.Component {
     if (oauthToken) {
       this.createPicker(oauthToken);
     } else {
-      this.doAuth(response => {
+      this.doAuth((response) => {
         if (response.access_token) {
-          this.createPicker(response.access_token)
+          this.createPicker(response.access_token);
         } else {
           this.props.onAuthFailed(response);
         }
@@ -107,57 +112,57 @@ export default class GoogleChooser extends React.Component {
   }
 
   createPicker(oauthToken) {
-
     this.props.onAuthenticate(oauthToken);
 
-    if(this.props.createPicker){
-      return this.props.createPicker(google, oauthToken)
+    if (this.props.createPicker) {
+      return this.props.createPicker(google, oauthToken);
     }
-
+    go.setLocale(string);
     const googleViewId = google.picker.ViewId[this.props.viewId];
     const view = new window.google.picker.View(googleViewId);
-
+    const documentView = new window.google.picker.DocsUploadView(googleViewId)
     if (this.props.mimeTypes) {
-      view.setMimeTypes(this.props.mimeTypes.join(','))
+      view.setMimeTypes(this.props.mimeTypes.join(","));
     }
     if (this.props.query) {
-      view.setQuery(this.props.query)
+      view.setQuery(this.props.query);
     }
 
     if (!view) {
-      throw new Error('Can\'t find view by viewId');
+      throw new Error("Can't find view by viewId");
     }
-
+    documentView.setIncludeFolders(true).setParent('root')
     const picker = new window.google.picker.PickerBuilder()
-                             .addView(view)
-                             .setOAuthToken(oauthToken)
-                             .setDeveloperKey(this.props.developerKey)
-                             .setCallback(this.props.onChange);
+      .setLocale("it-IT")
+      .addView(view)
+      .addView(documentView)
+      .setOAuthToken(oauthToken)
+      .setDeveloperKey(this.props.developerKey)
+      .setCallback(this.props.onChange);
 
     if (this.props.origin) {
       picker.setOrigin(this.props.origin);
     }
 
     if (this.props.navHidden) {
-      picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN)
+      picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN);
     }
 
     if (this.props.multiselect) {
-      picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED)
+      picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED);
     }
 
-    picker.build()
-          .setVisible(true);
+    picker.build().setVisible(true);
   }
 
   render() {
     return (
       <div onClick={this.onChoose}>
-        {
-          this.props.children ?
-            this.props.children :
-            <button>Open google chooser</button>
-        }
+        {this.props.children ? (
+          this.props.children
+        ) : (
+          <button>Open google chooser</button>
+        )}
       </div>
     );
   }
