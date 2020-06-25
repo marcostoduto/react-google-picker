@@ -117,7 +117,6 @@ export default class GoogleChooser extends React.Component {
     if (this.props.createPicker) {
       return this.props.createPicker(google, oauthToken);
     }
-    go.setLocale(string);
     const googleViewId = google.picker.ViewId[this.props.viewId];
     const view = new window.google.picker.View(googleViewId);
     const documentView = new window.google.picker.DocsUploadView(googleViewId)
@@ -133,7 +132,7 @@ export default class GoogleChooser extends React.Component {
     }
     documentView.setIncludeFolders(true).setParent('root')
     const picker = new window.google.picker.PickerBuilder()
-      .setLocale("it-IT")
+      .setLocale('it-IT')
       .addView(view)
       .addView(documentView)
       .setOAuthToken(oauthToken)
