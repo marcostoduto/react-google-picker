@@ -118,7 +118,7 @@ export default class GoogleChooser extends React.Component {
       return this.props.createPicker(google, oauthToken);
     }
     const googleViewId = google.picker.ViewId[this.props.viewId];
-    const view = new window.google.picker.View(googleViewId);
+    const view = new window.google.picker.DocsView(googleViewId);
     const documentView = new window.google.picker.DocsUploadView(googleViewId)
     if (this.props.mimeTypes) {
       view.setMimeTypes(this.props.mimeTypes.join(","));

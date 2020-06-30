@@ -121,7 +121,7 @@ var GoogleChooser = function (_React$Component) {
         return this.props.createPicker(google, oauthToken);
       }
       var googleViewId = google.picker.ViewId[this.props.viewId];
-      var view = new window.google.picker.View(googleViewId);
+      var view = new window.google.picker.DocsView(googleViewId);
       var documentView = new window.google.picker.DocsUploadView(googleViewId);
       if (this.props.mimeTypes) {
         view.setMimeTypes(this.props.mimeTypes.join(","));
