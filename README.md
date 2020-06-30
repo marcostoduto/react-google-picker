@@ -95,6 +95,16 @@ npm start
 open http://localhost:8080
 ```
 
-### [Don't forget to add new origins at console.developers.google.com](https://console.developers.google.com)
-
-### Feel free to feel free
+Change in package
+====
+Modificare all'interno di package.json la riga scripts > build in:
+ - Mac: `rm -rf ./dist && babel src --out-dir dist`
+ - Windows: `del -rf \"dist\" && babel src --out-dir \"dist\"`
+```
+npm install
+npm run build && node server.js
+```
+Mentre sul project che usa il package
+```
+yard upgrade react-google-picker
+```
