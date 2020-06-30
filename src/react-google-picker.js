@@ -25,9 +25,9 @@ export default class GoogleChooser extends React.Component {
   };
 
   static defaultProps = {
-    onChange: () => {},
-    onAuthenticate: () => {},
-    onAuthFailed: () => {},
+    onChange: () => { },
+    onAuthenticate: () => { },
+    onAuthFailed: () => { },
     scope: ["https://www.googleapis.com/auth/drive.readonly"],
     viewId: "DOCS",
     authImmediate: false,
@@ -130,7 +130,9 @@ export default class GoogleChooser extends React.Component {
     if (!view) {
       throw new Error("Can't find view by viewId");
     }
-    documentView.setIncludeFolders(true).setParent('root')
+    documentView.setIncludeFolders(true);
+    view.setIncludeFolders(true);
+    view.setParent('root')
     const picker = new window.google.picker.PickerBuilder()
       .setLocale('it-IT')
       .addView(view)
@@ -160,8 +162,8 @@ export default class GoogleChooser extends React.Component {
         {this.props.children ? (
           this.props.children
         ) : (
-          <button>Open google chooser</button>
-        )}
+            <button>Open google chooser</button>
+          )}
       </div>
     );
   }

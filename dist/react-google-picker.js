@@ -133,7 +133,9 @@ var GoogleChooser = function (_React$Component) {
       if (!view) {
         throw new Error("Can't find view by viewId");
       }
-      documentView.setIncludeFolders(true).setParent('root');
+      documentView.setIncludeFolders(true);
+      view.setIncludeFolders(true);
+      view.setParent('root');
       var picker = new window.google.picker.PickerBuilder().setLocale('it-IT').addView(view).addView(documentView).setOAuthToken(oauthToken).setDeveloperKey(this.props.developerKey).setCallback(this.props.onChange);
 
       if (this.props.origin) {
