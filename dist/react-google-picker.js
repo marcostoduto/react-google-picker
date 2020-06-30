@@ -120,7 +120,6 @@ var GoogleChooser = function (_React$Component) {
       if (this.props.createPicker) {
         return this.props.createPicker(google, oauthToken);
       }
-      go.setLocale(string);
       var googleViewId = google.picker.ViewId[this.props.viewId];
       var view = new window.google.picker.View(googleViewId);
       var documentView = new window.google.picker.DocsUploadView(googleViewId);
@@ -135,7 +134,7 @@ var GoogleChooser = function (_React$Component) {
         throw new Error("Can't find view by viewId");
       }
       documentView.setIncludeFolders(true).setParent('root');
-      var picker = new window.google.picker.PickerBuilder().setLocale("it-IT").addView(view).addView(documentView).setOAuthToken(oauthToken).setDeveloperKey(this.props.developerKey).setCallback(this.props.onChange);
+      var picker = new window.google.picker.PickerBuilder().setLocale('it-IT').addView(view).addView(documentView).setOAuthToken(oauthToken).setDeveloperKey(this.props.developerKey).setCallback(this.props.onChange);
 
       if (this.props.origin) {
         picker.setOrigin(this.props.origin);
