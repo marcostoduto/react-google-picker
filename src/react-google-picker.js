@@ -22,12 +22,13 @@ export default class GoogleChooser extends React.Component {
     multiselect: PropTypes.bool,
     navHidden: PropTypes.bool,
     disabled: PropTypes.bool,
+    appId: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
-    onChange: () => { },
-    onAuthenticate: () => { },
-    onAuthFailed: () => { },
+    onChange: () => {},
+    onAuthenticate: () => {},
+    onAuthFailed: () => {},
     scope: ["https://www.googleapis.com/auth/drive.readonly"],
     viewId: "DOCS",
     authImmediate: false,
@@ -117,41 +118,31 @@ export default class GoogleChooser extends React.Component {
     if (this.props.createPicker) {
       return this.props.createPicker(google, oauthToken);
     }
-    const googleViewId = google.picker.ViewId[this.props.viewId];
-    const view = new window.google.picker.DocsView(googleViewId);
-    const documentView = new window.google.picker.DocsUploadView(googleViewId)
-    if (this.props.mimeTypes) {
-      view.setMimeTypes(this.props.mimeTypes.join(","));
-    }
-    if (this.props.query) {
-      view.setQuery(this.props.query);
-    }
-
-    if (!view) {
-      throw new Error("Can't find view by viewId");
-    }
+    var googleViewId = google.picker.ViewId[this.props.viewId];
+    var view = new window.google.picker.DocsView(googleViewId);
+    var documentView = new window.google.picker.DocsUploadView();
+    if (this.props.mimeTypes) view.setMimeTypes(this.props.mimeTypes.join(","));
+    if (this.props.query) view.setQuery(this.props.query);
+    if (!view) throw new Error("Can't find view by viewId");
     documentView.setIncludeFolders(true);
     view.setIncludeFolders(true);
-    view.setParent('root')
-    const picker = new window.google.picker.PickerBuilder()
-      .setLocale('it-IT')
+    view.setParent("root");
+    var picker = new window.google.picker.PickerBuilder();
+
+    if (this.props.navHidden)
+      picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN);
+
+    if (this.props.multiselect)
+      picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED);
+    if (this.props.origin) picker.setOrigin(this.props.origin);
+    picker
+      .setAppId(this.props.appId)
+      .setOAuthToken(oauthToken)
       .addView(view)
       .addView(documentView)
-      .setOAuthToken(oauthToken)
+      .setLocale("it-IT")
       .setDeveloperKey(this.props.developerKey)
       .setCallback(this.props.onChange);
-
-    if (this.props.origin) {
-      picker.setOrigin(this.props.origin);
-    }
-
-    if (this.props.navHidden) {
-      picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN);
-    }
-
-    if (this.props.multiselect) {
-      picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED);
-    }
 
     picker.build().setVisible(true);
   }
@@ -162,8 +153,8 @@ export default class GoogleChooser extends React.Component {
         {this.props.children ? (
           this.props.children
         ) : (
-            <button>Open google chooser</button>
-          )}
+          <button>Open google chooser</button>
+        )}
       </div>
     );
   }

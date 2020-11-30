@@ -122,33 +122,20 @@ var GoogleChooser = function (_React$Component) {
       }
       var googleViewId = google.picker.ViewId[this.props.viewId];
       var view = new window.google.picker.DocsView(googleViewId);
-      var documentView = new window.google.picker.DocsUploadView(googleViewId);
-      if (this.props.mimeTypes) {
-        view.setMimeTypes(this.props.mimeTypes.join(","));
-      }
-      if (this.props.query) {
-        view.setQuery(this.props.query);
-      }
-
-      if (!view) {
-        throw new Error("Can't find view by viewId");
-      }
+      var documentView = new window.google.picker.DocsUploadView();
+      if (this.props.mimeTypes) view.setMimeTypes(this.props.mimeTypes.join(","));
+      if (this.props.query) view.setQuery(this.props.query);
+      if (!view) throw new Error("Can't find view by viewId");
       documentView.setIncludeFolders(true);
       view.setIncludeFolders(true);
-      view.setParent('root');
-      var picker = new window.google.picker.PickerBuilder().setLocale('it-IT').addView(view).addView(documentView).setOAuthToken(oauthToken).setDeveloperKey(this.props.developerKey).setCallback(this.props.onChange);
+      view.setParent("root");
+      var picker = new window.google.picker.PickerBuilder();
 
-      if (this.props.origin) {
-        picker.setOrigin(this.props.origin);
-      }
+      if (this.props.navHidden) picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN);
 
-      if (this.props.navHidden) {
-        picker.enableFeature(window.google.picker.Feature.NAV_HIDDEN);
-      }
-
-      if (this.props.multiselect) {
-        picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED);
-      }
+      if (this.props.multiselect) picker.enableFeature(window.google.picker.Feature.MULTISELECT_ENABLED);
+      if (this.props.origin) picker.setOrigin(this.props.origin);
+      picker.setAppId(this.props.appId).setOAuthToken(oauthToken).addView(view).addView(documentView).setLocale("it-IT").setDeveloperKey(this.props.developerKey).setCallback(this.props.onChange);
 
       picker.build().setVisible(true);
     }
@@ -184,7 +171,8 @@ GoogleChooser.propTypes = {
   createPicker: _propTypes2.default.func,
   multiselect: _propTypes2.default.bool,
   navHidden: _propTypes2.default.bool,
-  disabled: _propTypes2.default.bool
+  disabled: _propTypes2.default.bool,
+  appId: _propTypes2.default.string.isRequired
 };
 GoogleChooser.defaultProps = {
   onChange: function onChange() {},
